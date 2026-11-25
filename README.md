@@ -1,33 +1,53 @@
 # BudgieOS X 1.0
 
-**BudgieOS X** is an original BudgieOS-family desktop concept with a macOS-inspired visual direction. It has its own BudgieOS branding and does not use Apple logos, system files, or proprietary assets.
+**BudgieOS X** is an independent BudgieOS-family operating-system project. Its planned desktop has a macOS-inspired visual direction with original BudgieOS branding; it does not use Apple's proprietary system files or assets.
 
-## Preview
-Open `index.html` in a modern browser, or enable GitHub Pages for a hosted preview.
+## Current architecture
 
-## Included
-- Glass-style top menu bar and desktop wallpaper
-- Desktop shortcuts
-- App dock
-- Interactive About, Files, and Settings windows
-- Responsive layout for desktop and mobile screens
+- **Boot:** GRUB Multiboot2, BIOS/Legacy-compatible x86 boot path
+- **Kernel:** NASM Assembly, 32-bit protected-mode starter
+- **Linker:** `linker.ld`
+- **Desktop concept:** `index.html` (separate browser-based UI preview)
 
-## Run locally
-Double-click `index.html`, or run a local static server:
+## Build a bootable ISO
+
+On Debian/Ubuntu/Kali Linux, install the tools:
 
 ```bash
-python3 -m http.server 8000
+sudo apt update
+sudo apt install nasm binutils grub-pc-bin grub-common xorriso mtools
 ```
 
-Then open `http://localhost:8000`.
+Build:
 
-## Project status
-This is a **visual desktop prototype**, not a bootable OS or macOS replacement. It does not yet include a kernel, bootloader, hardware drivers, filesystem, installer, or native applications.
+```bash
+chmod +x scripts/build.sh
+./scripts/build.sh
+```
 
-## Next development milestones
-1. Convert the interface into a desktop shell.
-2. Add a native window manager and app launcher.
-3. Connect a BudgieOS kernel and filesystem.
-4. Add hardware support and an installer.
+The output is:
+
+```
+build/BudgieOS-X-1.0.iso
+```
+
+Test the ISO in a virtual machine such as QEMU or VirtualBox. Do not write it to a real disk; this is an early development build.
+
+## GitHub Actions
+
+Every push to `main`, or a manual run from the **Actions** tab, builds the ISO. Download the `BudgieOS-X-1.0-ISO` artifact after the workflow succeeds.
+
+## Important project status
+
+This is an **early bootable Assembly kernel starter**, not a finished desktop operating system. The kernel currently writes a boot message to VGA text memory. It does not yet have a graphical desktop, drivers, USB, Wi-Fi, audio, multitasking, user accounts, a filesystem, or an installer. The browser desktop in `index.html` is only a visual concept and is not connected to the kernel yet.
+
+## Source layout
+
+- `src/boot.asm` — Multiboot2 entry point and stack
+- `src/kernel.asm` — minimal Assembly kernel
+- `linker.ld` — kernel memory layout
+- `grub/grub.cfg` — boot menu
+- `scripts/build.sh` — ISO build script
+- `.github/workflows/build-iso.yml` — CI build
 
 BudgieOS X is an independent project and is not affiliated with Apple.
